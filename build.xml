@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jackson-json-handler" default="build">
+    <target name="build">
+        <echo message="Building Jackson JSON Handler plugins..."/>
+        
+        <!-- Build the plugins -->
+        <eclipse.buildScript 
+            elements="plugin@org.eclipse.jackson.json.add-json-property,
+                     plugin@org.eclipse.jackson.json.copy-as-json"
+            buildDirectory="${basedir}/plugins"
+            baseLocation="${basedir}/eclipse"/>
+            
+        <!-- Build the feature -->
+        <eclipse.buildScript
+            elements="feature@org.eclipse.jackson.json.feature"
+            buildDirectory="${basedir}/features"
+            baseLocation="${basedir}/eclipse"/>
+            
+        <!-- Build the update site -->
+        <eclipse.buildScript
+            elements="site@update-site"
+            buildDirectory="${basedir}"
+            baseLocation="${basedir}/eclipse"/>
+    </target>
+</project>
