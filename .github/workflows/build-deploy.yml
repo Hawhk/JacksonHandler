@@ -23,8 +23,8 @@ jobs:
       run: |
         mkdir -p tools
         cd tools
-        wget https://download.eclipse.org/eclipse/downloads/drops4/R-4.31-202403061644/eclipse-platform-4.31-linux-gtk-x86_64.tar.gz
-        tar xzf eclipse-platform-4.31-linux-gtk-x86_64.tar.gz
+        wget https://download.eclipse.org/eclipse/downloads/drops4/R-4.30-202312010110/eclipse-platform-4.30-linux-gtk-x86_64.tar.gz
+        tar xzf eclipse-platform-4.30-linux-gtk-x86_64.tar.gz
         cd eclipse/plugins
         # Extract only needed plugins for building
         for plugin in org.eclipse.pde.build_*.jar org.eclipse.equinox.launcher_*.jar; do
