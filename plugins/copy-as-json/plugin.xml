@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="copy-as-json.contribution1"
+            targetID="org.eclipse.jdt.ui.CompilationUnitEditor.EditorContext">
+         <action
+               id="copy-as-json.action1"
+               label="Copy as JSON"
+               class="copyasjson.handlers.CopyAsJsonHandler"
+               menubarPath="additions">
+         </action>
+      </viewerContribution>
+   </extension>
+</plugin>
