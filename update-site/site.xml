@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
    <feature url="features/JacksonHandlerFeature_1.0.0.jar" id="JacksonHandlerFeature" version="1.0.0"/>
+   <category-def name="jackson" label="Jackson JSON Handler">
+      <description>
+         Tools for handling JSON using Jackson in Eclipse
+      </description>
+   </category-def>
 </site>

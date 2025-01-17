@@ -19,27 +19,37 @@ jobs:
         java-version: '23'
         distribution: 'temurin'
 
-    - name: Setup Eclipse PDE Build
+    - name: Install Xvfb and dependencies
       run: |
-        mkdir -p tools
-        cd tools
-        wget https://download.eclipse.org/eclipse/downloads/drops4/R-4.30-202312010110/eclipse-platform-4.30-linux-gtk-x86_64.tar.gz
-        tar xzf eclipse-platform-4.30-linux-gtk-x86_64.tar.gz
-        cd eclipse/plugins
-        # Extract only needed plugins for building
-        for plugin in org.eclipse.pde.build_*.jar org.eclipse.equinox.launcher_*.jar; do
-          jar xf $plugin
-        done
+        sudo apt-get update
+        sudo apt-get install -y xvfb libxrender1 libxtst6 libxi6 libgtk-3-0
 
-    - name: Build Update Site
+    - name: Start Xvfb
       run: |
-        cd tools/eclipse
-        ./eclipse \
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        echo "DISPLAY=:99.0" >> $GITHUB_ENV
+        sleep 3  # give xvfb some time to start
+
+    - name: Setup Eclipse
+      run: |
+        wget https://download.eclipse.org/technology/epp/downloads/release/2023-12/R/eclipse-committers-2023-12-R-linux-gtk-x86_64.tar.gz
+        tar xzf eclipse-committers-2023-12-R-linux-gtk-x86_64.tar.gz
+        
+    - name: Install Dependencies
+      run: |
+        ./eclipse/eclipse -noSplash -clean -purgeHistory \
+          -application org.eclipse.equinox.p2.director \
+          -repository https://download.eclipse.org/releases/2023-12 \
+          -installIU org.eclipse.pde.feature.group,org.eclipse.jdt.feature.group,org.eclipse.e4.rcp.feature.group,org.eclipse.platform.feature.group
+
+    - name: Build Project
+      run: |
+        ./eclipse/eclipse \
+          -noSplash \
           -application org.eclipse.ant.core.antRunner \
-          -buildfile plugins/org.eclipse.pde.build/scripts/build.xml \
-          -Dbuilder=$GITHUB_WORKSPACE/update-site \
-          -DbaseLocation=$GITHUB_WORKSPACE/tools/eclipse
-
+          -data workspace \
+          -buildfile build.xml
+          
     - name: Upload update site
       if: success() && github.ref == 'refs/heads/main'
       uses: actions/upload-pages-artifact@v2

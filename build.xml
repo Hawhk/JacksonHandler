@@ -1,25 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="jackson-json-handler" default="build">
-    <target name="build">
+    
+    <property name="eclipse.home" location="${basedir}/eclipse"/>
+    <property name="build.directory" location="${basedir}/target"/>
+    <property name="feature.id" value="org.eclipse.jackson.json.feature"/>
+    
+    <!-- Find PDE Build plugin directory -->
+    <path id="pde.build.dir">
+        <first>
+            <fileset dir="${eclipse.home}/plugins" includes="org.eclipse.pde.build_*.jar"/>
+        </first>
+    </path>
+    <property name="pde.build.script" location="${toString:pde.build.dir}/scripts/build.xml"/>
+    
+    <target name="init">
+        <mkdir dir="${build.directory}"/>
+        <mkdir dir="update-site/target/site"/>
+        <echo message="Using PDE build script at: ${pde.build.script}"/>
+    </target>
+
+    <target name="build" depends="init">
         <echo message="Building Jackson JSON Handler plugins..."/>
         
-        <!-- Build the plugins -->
-        <eclipse.buildScript 
-            elements="plugin@org.eclipse.jackson.json.add-json-property,
-                     plugin@org.eclipse.jackson.json.copy-as-json"
-            buildDirectory="${basedir}/plugins"
-            baseLocation="${basedir}/eclipse"/>
-            
-        <!-- Build the feature -->
-        <eclipse.buildScript
-            elements="feature@org.eclipse.jackson.json.feature"
-            buildDirectory="${basedir}/features"
-            baseLocation="${basedir}/eclipse"/>
-            
-        <!-- Build the update site -->
-        <eclipse.buildScript
-            elements="site@update-site"
-            buildDirectory="${basedir}"
-            baseLocation="${basedir}/eclipse"/>
+        <!-- Copy plugins and features to build directory -->
+        <copy todir="${build.directory}">
+            <fileset dir="${basedir}">
+                <include name="plugins/**"/>
+                <include name="features/**"/>
+            </fileset>
+        </copy>
+
+        <!-- Run PDE Build -->
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
+            <classpath>
+                <fileset dir="${eclipse.home}/plugins">
+                    <include name="org.eclipse.equinox.launcher_*.jar"/>
+                </fileset>
+            </classpath>
+            <arg value="-data"/>
+            <arg value="${build.directory}/workspace"/>
+            <arg value="-application"/>
+            <arg value="org.eclipse.pde.build.Build"/>
+            <arg value="-buildfile"/>
+            <arg value="${pde.build.script}"/>
+            <arg value="-DbaseLocation=${eclipse.home}"/>
+            <arg value="-DbuildDirectory=${build.directory}"/>
+            <arg value="-Dbuilder=${basedir}/builder"/>
+            <arg value="-DpluginPath=${build.directory}/plugins"/>
+            <arg value="-DfeaturePath=${build.directory}/features"/>
+            <arg value="-DtopLevelElementType=feature"/>
+            <arg value="-DtopLevelElementId=${feature.id}"/>
+            <jvmarg value="-Dosgi.noShutdown=false"/>
+            <jvmarg value="-Dorg.eclipse.update.reconcile=false"/>
+        </java>
+
+        <!-- Generate P2 metadata -->
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
+            <classpath>
+                <fileset dir="${eclipse.home}/plugins">
+                    <include name="org.eclipse.equinox.launcher_*.jar"/>
+                </fileset>
+            </classpath>
+            <arg value="-application"/>
+            <arg value="org.eclipse.equinox.p2.publisher.FeaturesAndBundlesPublisher"/>
+            <arg value="-metadataRepository"/>
+            <arg value="file:${basedir}/update-site/target/site"/>
+            <arg value="-artifactRepository"/>
+            <arg value="file:${basedir}/update-site/target/site"/>
+            <arg value="-source"/>
+            <arg value="${build.directory}"/>
+            <arg value="-configs"/>
+            <arg value="gtk.linux.x86_64"/>
+            <arg value="-compress"/>
+            <arg value="-publishArtifacts"/>
+        </java>
     </target>
+
 </project>
