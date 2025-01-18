@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: copy-as-json
 Bundle-SymbolicName: copy-as-json;singleton:=true
-Bundle-Version: 1.1.3
+Bundle-Version: 1.0.0
 Bundle-Activator: copyasjson.Activator
 Require-Bundle: org.eclipse.jface,
  org.eclipse.e4.ui.model.workbench,
@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.jface,
  org.eclipse.jdt.ui;bundle-version="3.32.0",
  org.eclipse.ui.editors,
  org.eclipse.ui.ide
-Bundle-RequiredExecutionEnvironment: JavaSE-23
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: copy-as-json
 Import-Package: jakarta.annotation;version="[2.1.0,3.0.0)",
  jakarta.inject;version="[2.0.0,3.0.0)",
